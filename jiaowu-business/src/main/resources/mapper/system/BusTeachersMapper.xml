@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiaowu.system.mapper.BusTeachersMapper">
+    
+    <resultMap type="BusTeachers" id="BusTeachersResult">
+        <result property="teacherId"    column="teacher_id"    />
+        <result property="teacherNumber"    column="teacher_number"    />
+        <result property="teacherName"    column="teacher_name"    />
+        <result property="gender"    column="gender"    />
+        <result property="birthDate"    column="birth_date"    />
+        <result property="email"    column="email"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="subjectTaught"    column="subject_taught"    />
+    </resultMap>
+
+    <sql id="selectBusTeachersVo">
+        select teacher_id, teacher_number, teacher_name, gender, birth_date, email, phone_number, subject_taught from bus_teachers
+    </sql>
+
+    <select id="selectBusTeachersList" parameterType="BusTeachers" resultMap="BusTeachersResult">
+        <include refid="selectBusTeachersVo"/>
+        <where>  
+            <if test="teacherNumber != null  and teacherNumber != ''"> and teacher_number = #{teacherNumber}</if>
+            <if test="teacherName != null  and teacherName != ''"> and teacher_name like concat('%', #{teacherName}, '%')</if>
+            <if test="gender != null  and gender != ''"> and gender = #{gender}</if>
+            <if test="birthDate != null "> and birth_date = #{birthDate}</if>
+            <if test="email != null  and email != ''"> and email = #{email}</if>
+            <if test="phoneNumber != null  and phoneNumber != ''"> and phone_number = #{phoneNumber}</if>
+            <if test="subjectTaught != null  and subjectTaught != ''"> and subject_taught = #{subjectTaught}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusTeachersByTeacherId" parameterType="Long" resultMap="BusTeachersResult">
+        <include refid="selectBusTeachersVo"/>
+        where teacher_id = #{teacherId}
+    </select>
+
+    <insert id="insertBusTeachers" parameterType="BusTeachers" useGeneratedKeys="true" keyProperty="teacherId">
+        insert into bus_teachers
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="teacherNumber != null and teacherNumber != ''">teacher_number,</if>
+            <if test="teacherName != null and teacherName != ''">teacher_name,</if>
+            <if test="gender != null">gender,</if>
+            <if test="birthDate != null">birth_date,</if>
+            <if test="email != null">email,</if>
+            <if test="phoneNumber != null">phone_number,</if>
+            <if test="subjectTaught != null">subject_taught,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="teacherNumber != null and teacherNumber != ''">#{teacherNumber},</if>
+            <if test="teacherName != null and teacherName != ''">#{teacherName},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="birthDate != null">#{birthDate},</if>
+            <if test="email != null">#{email},</if>
+            <if test="phoneNumber != null">#{phoneNumber},</if>
+            <if test="subjectTaught != null">#{subjectTaught},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusTeachers" parameterType="BusTeachers">
+        update bus_teachers
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="teacherNumber != null and teacherNumber != ''">teacher_number = #{teacherNumber},</if>
+            <if test="teacherName != null and teacherName != ''">teacher_name = #{teacherName},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="birthDate != null">birth_date = #{birthDate},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
+            <if test="subjectTaught != null">subject_taught = #{subjectTaught},</if>
+        </trim>
+        where teacher_id = #{teacherId}
+    </update>
+
+    <delete id="deleteBusTeachersByTeacherId" parameterType="Long">
+        delete from bus_teachers where teacher_id = #{teacherId}
+    </delete>
+
+    <delete id="deleteBusTeachersByTeacherIds" parameterType="String">
+        delete from bus_teachers where teacher_id in 
+        <foreach item="teacherId" collection="array" open="(" separator="," close=")">
+            #{teacherId}
+        </foreach>
+    </delete>
+</mapper>

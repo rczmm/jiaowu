@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiaowu.system.mapper.BusGradesMapper">
+    
+    <resultMap type="BusGrades" id="BusGradesResult">
+        <result property="studentId"    column="student_id"    />
+        <result property="courseId"    column="course_id"    />
+        <result property="grade"    column="grade"    />
+    </resultMap>
+
+    <sql id="selectBusGradesVo">
+        select student_id, course_id, grade from bus_grades
+    </sql>
+
+    <select id="selectBusGradesList" parameterType="BusGrades" resultMap="BusGradesResult">
+        <include refid="selectBusGradesVo"/>
+        <where>  
+            <if test="grade != null "> and grade = #{grade}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusGradesByStudentId" parameterType="Long" resultMap="BusGradesResult">
+        <include refid="selectBusGradesVo"/>
+        where student_id = #{studentId}
+    </select>
+
+    <insert id="insertBusGrades" parameterType="BusGrades">
+        insert into bus_grades
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">student_id,</if>
+            <if test="courseId != null">course_id,</if>
+            <if test="grade != null">grade,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">#{studentId},</if>
+            <if test="courseId != null">#{courseId},</if>
+            <if test="grade != null">#{grade},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusGrades" parameterType="BusGrades">
+        update bus_grades
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseId != null">course_id = #{courseId},</if>
+            <if test="grade != null">grade = #{grade},</if>
+        </trim>
+        where student_id = #{studentId}
+    </update>
+
+    <delete id="deleteBusGradesByStudentId" parameterType="Long">
+        delete from bus_grades where student_id = #{studentId}
+    </delete>
+
+    <delete id="deleteBusGradesByStudentIds" parameterType="String">
+        delete from bus_grades where student_id in 
+        <foreach item="studentId" collection="array" open="(" separator="," close=")">
+            #{studentId}
+        </foreach>
+    </delete>
+</mapper>

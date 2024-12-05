@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiaowu.system.mapper.BusEnrollmentsMapper">
+    
+    <resultMap type="BusEnrollments" id="BusEnrollmentsResult">
+        <result property="studentId"    column="student_id"    />
+        <result property="courseId"    column="course_id"    />
+        <result property="enrollmentStatus"    column="enrollment_status"    />
+    </resultMap>
+
+    <sql id="selectBusEnrollmentsVo">
+        select student_id, course_id, enrollment_status from bus_enrollments
+    </sql>
+
+    <select id="selectBusEnrollmentsList" parameterType="BusEnrollments" resultMap="BusEnrollmentsResult">
+        <include refid="selectBusEnrollmentsVo"/>
+        <where>  
+            <if test="enrollmentStatus != null  and enrollmentStatus != ''"> and enrollment_status = #{enrollmentStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusEnrollmentsByStudentId" parameterType="Long" resultMap="BusEnrollmentsResult">
+        <include refid="selectBusEnrollmentsVo"/>
+        where student_id = #{studentId}
+    </select>
+
+    <insert id="insertBusEnrollments" parameterType="BusEnrollments">
+        insert into bus_enrollments
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">student_id,</if>
+            <if test="courseId != null">course_id,</if>
+            <if test="enrollmentStatus != null">enrollment_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">#{studentId},</if>
+            <if test="courseId != null">#{courseId},</if>
+            <if test="enrollmentStatus != null">#{enrollmentStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusEnrollments" parameterType="BusEnrollments">
+        update bus_enrollments
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseId != null">course_id = #{courseId},</if>
+            <if test="enrollmentStatus != null">enrollment_status = #{enrollmentStatus},</if>
+        </trim>
+        where student_id = #{studentId}
+    </update>
+
+    <delete id="deleteBusEnrollmentsByStudentId" parameterType="Long">
+        delete from bus_enrollments where student_id = #{studentId}
+    </delete>
+
+    <delete id="deleteBusEnrollmentsByStudentIds" parameterType="String">
+        delete from bus_enrollments where student_id in 
+        <foreach item="studentId" collection="array" open="(" separator="," close=")">
+            #{studentId}
+        </foreach>
+    </delete>
+</mapper>

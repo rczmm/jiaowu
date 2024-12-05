@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiaowu.system.mapper.BusCoursesMapper">
+    
+    <resultMap type="BusCourses" id="BusCoursesResult">
+        <result property="courseId"    column="course_id"    />
+        <result property="courseNumber"    column="course_number"    />
+        <result property="courseName"    column="course_name"    />
+        <result property="credits"    column="credits"    />
+        <result property="description"    column="description"    />
+        <result property="semester"    column="semester"    />
+    </resultMap>
+
+    <sql id="selectBusCoursesVo">
+        select course_id, course_number, course_name, credits, description, semester from bus_courses
+    </sql>
+
+    <select id="selectBusCoursesList" parameterType="BusCourses" resultMap="BusCoursesResult">
+        <include refid="selectBusCoursesVo"/>
+        <where>  
+            <if test="courseNumber != null  and courseNumber != ''"> and course_number = #{courseNumber}</if>
+            <if test="courseName != null  and courseName != ''"> and course_name like concat('%', #{courseName}, '%')</if>
+            <if test="credits != null "> and credits = #{credits}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="semester != null  and semester != ''"> and semester = #{semester}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusCoursesByCourseId" parameterType="Long" resultMap="BusCoursesResult">
+        <include refid="selectBusCoursesVo"/>
+        where course_id = #{courseId}
+    </select>
+
+    <insert id="insertBusCourses" parameterType="BusCourses" useGeneratedKeys="true" keyProperty="courseId">
+        insert into bus_courses
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseNumber != null and courseNumber != ''">course_number,</if>
+            <if test="courseName != null and courseName != ''">course_name,</if>
+            <if test="credits != null">credits,</if>
+            <if test="description != null">description,</if>
+            <if test="semester != null">semester,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseNumber != null and courseNumber != ''">#{courseNumber},</if>
+            <if test="courseName != null and courseName != ''">#{courseName},</if>
+            <if test="credits != null">#{credits},</if>
+            <if test="description != null">#{description},</if>
+            <if test="semester != null">#{semester},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusCourses" parameterType="BusCourses">
+        update bus_courses
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseNumber != null and courseNumber != ''">course_number = #{courseNumber},</if>
+            <if test="courseName != null and courseName != ''">course_name = #{courseName},</if>
+            <if test="credits != null">credits = #{credits},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="semester != null">semester = #{semester},</if>
+        </trim>
+        where course_id = #{courseId}
+    </update>
+
+    <delete id="deleteBusCoursesByCourseId" parameterType="Long">
+        delete from bus_courses where course_id = #{courseId}
+    </delete>
+
+    <delete id="deleteBusCoursesByCourseIds" parameterType="String">
+        delete from bus_courses where course_id in 
+        <foreach item="courseId" collection="array" open="(" separator="," close=")">
+            #{courseId}
+        </foreach>
+    </delete>
+</mapper>
